@@ -21,15 +21,18 @@ int subString(char *input, char *output, int initIndex, int size){
 }
 
 int verifyCpf(char *cpf){
-	int multiplier = 10;
+	
+	int i = 0;
+	int j = 0;
+	int multiplier = 10;						// NÚMERO QUE MULTIPLICARÁ CADA DIGITO DO CPF DECREMENTALMENTE
+	int sum = 0;								// ARMAZENA A SOMA FINAL DOS NUMEROS DO CPF MULTIPLICADOS
 
 	char cpfWithoutDigit[20] = {0x00};
 	char originalDigit[4] = {0x00};
 	char finalDigit[4] = {0x00};
 
-	int numChars[32];
+	int numChars[32];							// ARRAY QUE RECEBE OS CARACTÉRES DO CPF EM int
 	int multiplied[32];
-	int sum = 0;
 	int sums[30];
 
 	double divRemainder = 0.0;
@@ -42,16 +45,16 @@ int verifyCpf(char *cpf){
 	subString(cpf, originalDigit, 9, 2);
 	subString(cpf, cpfWithoutDigit, 0, strlen(cpf) - 2);
 
-	for(int i = 0; i < 2; i++){
-		for(int j = 0; j < strlen(cpfWithoutDigit); j++){
-			numChars[j] = cpf[j] - '0';
+	for(i = 0; i < 2; i++){
+		for(j = 0; j < strlen(cpfWithoutDigit); j++){
+			numChars[j] = cpf[j] - '0'; // char PARA int CALCULANDO PELO CÓDIGO ASCII
 			multiplied[j] = numChars[j] * multiplier;
 			multiplier--;
 			sum += multiplied[j];
 
 		}
 
-		divRemainder = fmod(sum, 11);
+		divRemainder = sum % 11;
 		if(divRemainder < 2){
 			if(strlen(finalDigit) < 1){
 				strcpy(finalDigit, "0");
@@ -65,8 +68,9 @@ int verifyCpf(char *cpf){
 		sum = 0;
 		memset(numChars, 0x00, sizeof(numChars));
 		memset(multiplied, 0x00, sizeof(multiplied));
-		sprintf(cpfWithoutDigit, "%s%d", cpfWithoutDigit, (int)(11 - divRemainder));
+		sprintf(cpfWithoutDigit, "%s%s", cpfWithoutDigit, finalDigit);
 		multiplier = 11;
+
 
 	}
 
@@ -79,10 +83,13 @@ int verifyCpf(char *cpf){
 
 int verifyCnpj(char *cnpj){
 	
-	int multiplier = 2;
-	int sum = 0;
+	int i = 0;
+	int j = 0;
+	int k = 0;
+	int multiplier = 2;							// NÚMERO QUE MULTIPLICARÁ CADA DIGITO DO CNPJ INCREMENTALMENTE DE 2 A 9
+	int sum = 0;								// ARMAZENA A SOMA FINAL DOS NUMEROS DO CNPJ MULTIPLICADOS
 
-	int numChars[32];
+	int numChars[32];							// ARRAY QUE RECEBE OS CARACTÉRES DO CNPJ EM int
 	int multiplied[32];
 
 	char cnpjWithoutDigit[32];
@@ -97,19 +104,18 @@ int verifyCnpj(char *cnpj){
 	subString(cnpj, originalDigit, strlen(cnpj) - 2, 2);
 	subString(cnpj, cnpjWithoutDigit, 0, strlen(cnpj) - 2);
 
-	for(int i = 0; i < 2; i++){
-		for(int j = strlen(cnpjWithoutDigit) - 2, k = 0; j >= 0; j--, k++){
-			numChars[k] = cnpj[j] - '0';
+	for(i = 0; i < 2; i++){
+		for(j = strlen(cnpjWithoutDigit) - 2, k = 0; j >= 0; j--, k++){
+			numChars[k] = cnpj[j] - '0'; // char PARA int CALCULANDO PELO CÓDIGO ASCII
 			multiplied[k] = numChars[k] * multiplier;
 			multiplier++;
 			if(multiplier > 9){
 				multiplier = 2;
 			}
 			sum += multiplied[k];			
-
 		}
 
-		divRemainder = fmod(sum, 11);
+		divRemainder = sum % 11;
 		if(divRemainder < 2){
 			if(strlen(finalDigit) < 1){
 				strcpy(finalDigit, "0");
@@ -123,10 +129,8 @@ int verifyCnpj(char *cnpj){
 		sum = 0;
 		memset(numChars, 0x00, sizeof(numChars));
 		memset(multiplied, 0x00, sizeof(multiplied));
-		sprintf(cnpjWithoutDigit, "%s%d", cnpjWithoutDigit, (int)(11 - divRemainder));
+		sprintf(cnpjWithoutDigit, "%s%s", cnpjWithoutDigit, finalDigit);
 		multiplier = 2;
-
-		
 	}
 
 	if(strcmp(finalDigit, originalDigit) != 0){
@@ -140,7 +144,7 @@ int verifyCnpj(char *cnpj){
 int main(void){
 
 	char cpf[] = "00000000000";
-	char cnpj[] = "33333333333328";
+	char cnpj[] = "00000000000000";
 
 	if(verifyCpf(cpf)){
 		printf("CPF VÁLIDO\n");
